@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+
+  postgres:
+    image: 'postgres:14.5'
+    # We are mentioning the user so that ownership of the volume created by docker-compose belongs to this user
+    # Here, we are using uid of the user "jyoti". This user "jyoti" exists only in the localhost as local user.
+    # Since, I'm using linux probably that's why it is needed otherwise docker compose creates the volume with
+    # ownership of a user who have uid "100998"
+    # user: "1000"
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: movies
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+      - ./sql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
